@@ -14,6 +14,7 @@ public enum TipoToken {
     PARENTESIS_DER("Simbolo_parentesis_dcho"),
     COMA("Simbolo_coma"),
     PUNTO_Y_COMA("Simbolo_punto_y_coma"),
+    ERROR("Error_lexico"),
     FIN("Fin_de_archivo");
 
     private final String nombre;

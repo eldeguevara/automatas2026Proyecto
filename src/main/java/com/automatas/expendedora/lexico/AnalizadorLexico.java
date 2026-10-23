@@ -64,7 +64,7 @@ public class AnalizadorLexico {
         this.fuente = fuente;
     }
 
-    /** Recorre la entrada y devuelve los tokens; el último siempre es FIN. */
+    /** Recorre la entrada y devuelve los tokens (incluye ERROR por cada carácter inválido); el último siempre es FIN. */
     public List<Token> analizar() {
         int i = 0;
         int linea = 1;
@@ -105,8 +105,11 @@ public class AnalizadorLexico {
             }
 
             if (estado == Q0) {
+                // El token ERROR queda en la lista para que el sintáctico descarte la instrucción
+                // sin reportar un segundo error por el mismo carácter.
                 errores.add(new ErrorAnalisis(ErrorAnalisis.Tipo.LEXICO, linea, columnaInicio,
                         "Caracter no reconocido: '" + c + "'"));
+                tokens.add(new Token(TipoToken.ERROR, String.valueOf(c), linea, columnaInicio));
                 i++;
                 columna++;
             } else {
