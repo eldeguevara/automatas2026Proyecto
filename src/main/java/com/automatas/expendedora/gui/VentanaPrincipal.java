@@ -5,6 +5,7 @@ import com.automatas.expendedora.errores.ErrorAnalisis;
 import com.automatas.expendedora.json.ConfiguracionJson;
 import com.automatas.expendedora.json.ErrorImportacion;
 import com.automatas.expendedora.lexico.TipoToken;
+import com.automatas.expendedora.maquina.Automata;
 import com.automatas.expendedora.maquina.ErrorSemantico;
 import com.automatas.expendedora.maquina.Estado;
 import com.automatas.expendedora.maquina.MaquinaExpendedora;
@@ -54,13 +55,14 @@ public final class VentanaPrincipal extends JFrame {
     }
 
     private final transient MaquinaExpendedora maquina = new MaquinaExpendedora();
-    private final PanelEstados panelEstados = new PanelEstados(maquina.getAutomata());
+    private final PanelEstados panelEstados = new PanelEstados();
     private final PanelMaquina panelMaquina;
     private final EditorCodigo editor = new EditorCodigo();
     private final PanelReportes reportes;
     private final JLabel barraEstado = new JLabel(" ");
     private final JCheckBox chkMaquinaVacia = new JCheckBox("Máquina vacía al ejecutar", true);
     private final transient List<JComponent> controlesEdicion = new ArrayList<>();
+    private final transient List<Automata.Transicion> recorrido = new ArrayList<>();
     private final JButton btnDetener;
     private final Timer temporizador = new Timer(PASO_EJECUCION_MS, e -> pasoAutomatico());
 
@@ -100,6 +102,10 @@ public final class VentanaPrincipal extends JFrame {
         });
         reportes = new PanelReportes(panelEstados::getEstadoMostrado, linea -> editor.irALinea(linea, true));
         panelEstados.setAlCambiar(reportes::refrescarDelta);
+        maquina.getAutomata().setObservador(transicion -> {
+            recorrido.add(transicion);
+            panelEstados.encolar(transicion);
+        });
         editor.alCambiar(this::codigoModificado);
 
         JToolBar barra = new JToolBar();
@@ -346,6 +352,7 @@ public final class VentanaPrincipal extends JFrame {
         ejecutarPaso();
         if (!ejecutor.hayMas()) {
             reportes.agregarInfo("Fin de la ejecución paso a paso.");
+            editor.quitarEjecucion();
             ejecutor = null;
         }
     }
@@ -353,12 +360,14 @@ public final class VentanaPrincipal extends JFrame {
     private void ejecutarPaso() {
         Instruccion instruccion = ejecutor.getSiguienteInstruccion();
         editor.marcarEjecucion(instruccion.linea());
+        recorrido.clear();
         List<String> salida = ejecutor.ejecutarSiguiente();
         instruccionesHechas++;
         reportes.agregarSalida(salida);
         if (instruccion.tipo() == TipoToken.MOSTRAR) {
             mostrarInventario();
         }
+        mostrarRecorrido();
         panelMaquina.actualizar();
         avisarEnPantalla(salida);
         barraEstado.setText("Instrucción " + instruccionesHechas + " de " + totalInstrucciones
@@ -403,6 +412,18 @@ public final class VentanaPrincipal extends JFrame {
         }
     }
 
+    /** Estados por los que pasó el autómata con la última instrucción, p. ej. "E2 → E3 → E4 → E0". */
+    private void mostrarRecorrido() {
+        if (recorrido.isEmpty()) {
+            return;
+        }
+        StringBuilder estados = new StringBuilder("      estados: ").append(recorrido.get(0).origen());
+        for (Automata.Transicion transicion : recorrido) {
+            estados.append(" → ").append(transicion.destino());
+        }
+        reportes.agregarInfo(estados.toString());
+    }
+
     /** Si la instrucción falló, la pantalla de la máquina muestra el motivo. */
     private void avisarEnPantalla(List<String> salida) {
         for (String linea : salida) {
@@ -422,6 +443,7 @@ public final class VentanaPrincipal extends JFrame {
         }
         reportes.verSalida();
         reportes.agregarInfo("> " + instruccion + "  (botón de la máquina)");
+        recorrido.clear();
         try {
             List<String> salida = new ArrayList<>();
             for (String mensaje : operacion.ejecutar()) {
@@ -434,6 +456,7 @@ public final class VentanaPrincipal extends JFrame {
             panelMaquina.actualizar();
             panelMaquina.mostrarMensaje(e.getMessage().split("\n")[0]);
         }
+        mostrarRecorrido();
         barraEstado.setText("Botón: " + instruccion + "  Estado: " + maquina.getEstado() + "  Saldo: Q" + maquina.getSaldo());
     }
 

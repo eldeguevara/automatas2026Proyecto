@@ -75,9 +75,8 @@ public class Ejecutor {
                 return maquina.recargar(instruccion.parametro(0), numero(instruccion, 1));
             case MONEDA: {
                 List<String> mensajes = new ArrayList<>(maquina.insertarMoneda(numero(instruccion, 0)));
-                // Como en los ejemplos: el saldo se informa al terminar una serie de monedas seguidas.
-                Instruccion proxima = getSiguienteInstruccion();
-                if (proxima == null || proxima.tipo() != TipoToken.MONEDA) {
+                // Como en los ejemplos: el saldo se informa al terminar una serie de monedas válidas seguidas.
+                if (!siguienteEsMonedaValida()) {
                     mensajes.add("Saldo disponible: Q" + maquina.getSaldo());
                 }
                 return mensajes;
@@ -93,6 +92,15 @@ public class Ejecutor {
             default:
                 throw new IllegalStateException("Instrucción desconocida: " + instruccion.tipo());
         }
+    }
+
+    private boolean siguienteEsMonedaValida() {
+        Instruccion proxima = getSiguienteInstruccion();
+        if (proxima == null || proxima.tipo() != TipoToken.MONEDA) {
+            return false;
+        }
+        String valor = proxima.parametro(0);
+        return valor.length() <= MAX_DIGITOS && MaquinaExpendedora.esMonedaPermitida(Integer.parseInt(valor));
     }
 
     private static int numero(Instruccion instruccion, int indice) throws ErrorSemantico {

@@ -52,7 +52,7 @@ class PanelEstados extends JPanel {
     private Estado mostrado = Automata.INICIAL;
     private transient Transicion activa;
 
-    PanelEstados(Automata automata) {
+    PanelEstados() {
         setLayout(new BorderLayout(0, 8));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(10, 8, 8, 8));
@@ -74,7 +74,6 @@ class PanelEstados extends JPanel {
         add(scroll, BorderLayout.SOUTH);
 
         temporizador = new Timer(PASO_MS, e -> mostrarSiguiente());
-        automata.setObservador(this::encolar);
         actualizarEtiqueta();
     }
 
@@ -105,7 +104,8 @@ class PanelEstados extends JPanel {
         alCambiar.run();
     }
 
-    private void encolar(Transicion transicion) {
+    /** Recibe una transición del autómata y la anima cuando le toque. */
+    void encolar(Transicion transicion) {
         pendientes.add(transicion);
         if (!temporizador.isRunning()) {
             mostrarSiguiente();
