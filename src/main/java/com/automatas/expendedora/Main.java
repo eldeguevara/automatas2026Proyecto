@@ -1,17 +1,19 @@
 package com.automatas.expendedora;
 
-import javax.swing.JFrame;
+import com.automatas.expendedora.gui.VentanaPrincipal;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 public class Main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame ventana = new JFrame("Simulador de Máquina Expendedora");
-            ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            ventana.setSize(1200, 800);
-            ventana.setLocationRelativeTo(null);
-            ventana.setVisible(true);
+            try {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException e) {
+                // Si falla, Swing usa su apariencia por defecto.
+            }
+            new VentanaPrincipal().setVisible(true);
         });
     }
 }

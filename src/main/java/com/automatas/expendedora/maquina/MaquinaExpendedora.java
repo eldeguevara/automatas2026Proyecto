@@ -62,6 +62,11 @@ public class MaquinaExpendedora {
         if (!esMonedaPermitida(valor)) {
             throw new ErrorSemantico("Moneda no permitida: Q" + valor + ". Solo se aceptan monedas de Q1, Q5 y Q10.");
         }
+        if (automata.getEstado() == Estado.E0) {
+            // Empieza una operación nueva: se vacían las bandejas de entrega y cambio.
+            ultimaEntrega = null;
+            ultimoCambio = 0;
+        }
         automata.transitar(Entrada.MONEDA);
         saldo += valor;
         compraFinalizada = false;
