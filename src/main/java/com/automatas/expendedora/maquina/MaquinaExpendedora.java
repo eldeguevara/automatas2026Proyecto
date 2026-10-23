@@ -204,6 +204,24 @@ public class MaquinaExpendedora {
         return ultimoCambio;
     }
 
+    /**
+     * Reemplaza inventario y estado con los de un archivo JSON ya validado.
+     * Se conserva el mismo autómata para que la interfaz siga recibiendo sus transiciones.
+     */
+    public void cargarEstado(Collection<Producto> nuevosProductos, Estado estado, int nuevoSaldo, String codigoSeleccion) {
+        productos.clear();
+        for (Producto producto : nuevosProductos) {
+            productos.put(producto.getCodigo(), producto);
+        }
+        automata.setEstado(estado);
+        saldo = nuevoSaldo;
+        seleccion = codigoSeleccion == null ? null : productos.get(codigoSeleccion);
+        compraFinalizada = false;
+        huboOperaciones = false;
+        ultimaEntrega = null;
+        ultimoCambio = 0;
+    }
+
     /** Copia independiente (sin observador) para simular un programa sin tocar la máquina real. */
     public MaquinaExpendedora copia() {
         MaquinaExpendedora copia = new MaquinaExpendedora();

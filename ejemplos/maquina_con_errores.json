@@ -1,0 +1,16 @@
+{
+  "productos": [
+    {"codigo": "A1", "nombre": "AGUA", "precio": 5, "cantidad": 15},
+    {"codigo": "A1", "nombre": "JUGO", "precio": 7, "cantidad": 3},
+    {"codigo": "B1", "nombre": "CHICLE", "precio": 0, "cantidad": 20},
+    {"codigo": "B2", "nombre": "DULCE", "precio": 2, "cantidad": -1},
+    {"codigo": "3X", "nombre": "MANI", "precio": 4, "cantidad": 8},
+    {"codigo": "C1", "nombre": "CAFE", "precio": 6.5, "cantidad": 2},
+    {"codigo": "C2", "nombre": "TE", "precios": 4, "cantidad": 2}
+  ],
+  "estado": {
+    "estadoActual": "E3",
+    "saldo": 10,
+    "seleccion": "A1"
+  }
+}

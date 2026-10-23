@@ -1,0 +1,13 @@
+{
+  "productos": [
+    {"codigo": "A1", "nombre": "AGUA", "precio": 5, "cantidad": 15},
+    {"codigo": "A2", "nombre": "GASEOSA", "precio": 8, "cantidad": 14},
+    {"codigo": "A3", "nombre": "GALLETA", "precio": 3, "cantidad": 15},
+    {"codigo": "B1", "nombre": "DULCE", "precio": 2, "cantidad": 0}
+  ],
+  "estado": {
+    "estadoActual": "E2",
+    "saldo": 10,
+    "seleccion": "A3"
+  }
+}
